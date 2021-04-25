@@ -1,21 +1,28 @@
 
-interface LevelStruct{
+export interface LevelStruct{
     width: number;
     height: number;
     bones: number;
     bombs: number;
-}
+};
 
-
-const Levels: LevelStruct[] = [
+export const Levels: LevelStruct[] = [
+    {width: 10, height: 10, bones: 1, bombs: 1},
     {width: 10, height: 10, bones: 2, bombs: 1},
-    {width: 10, height: 20, bones: 2, bombs: 1},
+    {width: 20, height: 10, bones: 2, bombs: 1},
     {width: 20, height: 20, bones: 2, bombs: 1},
-    {width: 20, height: 30, bones: 2, bombs: 2},
-    {width: 20, height: 40, bones: 2, bombs: 3},
-    {width: 10, height: 50, bones: 2, bombs: 4},
-    {width: 10, height: 100, bones: 1, bombs: 4},
-]
+    {width: 15, height: 30, bones: 3, bombs: 2},
+    {width: 10, height: 60, bones: 3, bombs: 3},
+    {width: 10, height: 100, bones: 2, bombs: 3},
+];
+
+export const GameState = {
+    START: 'start',
+    PLAYING: 'playing',
+    WIN: 'win',
+    GAMEOVER: 'gameover',
+    LEVELUP: 'levelup'
+};
 
 class Model{
     width: number;
@@ -27,6 +34,7 @@ class Model{
     levelBombs: number = 0;
     level: number = 0;
     levels: LevelStruct[] = Levels;
-}
+    state: string = GameState.START;
+};
 
 export default new Model();

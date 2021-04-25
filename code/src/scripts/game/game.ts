@@ -1,5 +1,9 @@
 import GridItem, { DirtContentType, GridItemType } from "./gridItem";
-import model from "./models/model";
+import model, { GameState } from "./models/model";
+import GameoverView from "./overlays/gameover";
+import LevelView from "./overlays/level";
+import StartView from "./overlays/start";
+import WinView from "./overlays/win";
 import Player from "./player";
 import UI from "./ui";
 
@@ -14,11 +18,17 @@ export default class Game{
     gridHeight = 50;
     grid;
     player: Player;
+    
+    startView = new StartView();
+    gameoverView = new GameoverView();
+    levelView = new LevelView();
+    winView = new WinView();
 
     constructor(id) {
         this.canvas = document.getElementById(id) as HTMLCanvasElement;
         this.ctx = this.canvas.getContext('2d');
 
+        model.state = GameState.START;
         this.newGame();
 
         window.addEventListener('keydown', (e) => this.handle_KEYDOWN(e))
@@ -40,12 +50,14 @@ export default class Game{
     }
 
     gameOver() {
+        model.state = GameState.GAMEOVER;
         model.foundDiamonds = 0;
         model.level = 0;
         this.newGame();
     }
 
     nextLevel() {
+        model.state = GameState.LEVELUP;
         model.level ++;
         if (model.level < model.levels.length) {
             this.newGame();
@@ -55,7 +67,7 @@ export default class Game{
     }
 
     winGame() {
-
+        model.state = GameState.WIN;
     }
 
     createGrid() {
@@ -132,6 +144,10 @@ export default class Game{
     }
 
     handle_KEYDOWN(e) {
+        if (model.state !== GameState.PLAYING) {
+            model.state = GameState.PLAYING;
+        }
+
         switch (e.key) {
             case 'ArrowRight':
                 this.checkSquare(1, 0);
@@ -149,13 +165,13 @@ export default class Game{
     }
 
     checkSquare(x, y) {
-
         if (x !== 0) {
             let nextX = this.player.x + x;
             let nextY = this.player.y + y;
             let nextSquare = this.grid[nextX][nextY];
             if (nextSquare && nextSquare.canOccupy()) {
                 this.player.x += x;
+                this.occupySquare(nextSquare);
             } else if (nextSquare && nextSquare.canDig()) {
                 this.digSquare(nextSquare);
             }
@@ -167,21 +183,14 @@ export default class Game{
             let nextSquare = this.grid[nextX][nextY];
             if (nextSquare && nextSquare.canOccupy()) {
                 this.player.y += y;
+                this.occupySquare(nextSquare);
             } else if (nextSquare && nextSquare.canDig()) {
                 this.digSquare(nextSquare);
             }
         }
     }
 
-    digSquare(square: GridItem) {
-        square.dig();
-
-        if (square.contents == DirtContentType.BOMB) {
-            setTimeout(() => {
-                this.gameOver();
-            }, 1000);
-        }
-        
+    occupySquare(square: GridItem) {
         if (square.contents == DirtContentType.BONE) {
             model.foundBones ++;
             if (model.foundBones == model.levelBones) {
@@ -193,6 +202,18 @@ export default class Game{
 
         if (square.contents == DirtContentType.DIAMOND) {
             model.foundDiamonds ++;
+        }
+
+        square.contents = DirtContentType.EMPTY;
+    }
+
+    digSquare(square: GridItem) {
+        square.dig();
+
+        if (square.contents == DirtContentType.BOMB) {
+            setTimeout(() => {
+                this.gameOver();
+            }, 1000);
         }
     }
 
@@ -225,6 +246,21 @@ export default class Game{
         this.ctx.translate(x + (this.gridWidth * model.gridSize) + 10, 0);
         this.ui.draw(this.ctx);
         this.ctx.restore();
+
+        switch(model.state) {
+            case GameState.START:
+                this.startView.draw(this.ctx);
+                break;
+            case GameState.GAMEOVER:
+                this.gameoverView.draw(this.ctx)
+                break;
+            case GameState.LEVELUP:
+                this.levelView.draw(this.ctx);
+                break;
+            case GameState.WIN:
+                this.winView.draw(this.ctx);
+                break;
+        }
     }
 
     resize() {
