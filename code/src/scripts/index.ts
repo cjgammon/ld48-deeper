@@ -1,14 +1,18 @@
 import './index.less';
 
 import Game from './game/game';
-import model from './game/model';
+import model from './game/models/model';
+import assetModel from './game/models/assets';
 
 class App {
 
     game: Game;
 
     constructor() {        
+        assetModel.load(() => this.ready());
+    }
 
+    ready() {
         this.game = new Game('game');
         this.resize();
 
@@ -16,7 +20,6 @@ class App {
 
         this.animation();
     }
-
 
     animation() {
         this.game.draw();

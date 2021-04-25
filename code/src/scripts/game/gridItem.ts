@@ -1,4 +1,5 @@
-import model from "./model";
+import assets from "./models/assets";
+import model from "./models/model";
 
 export class DirtContentType{
     static EMPTY = 'empty';
@@ -28,45 +29,47 @@ export default class GridItem{
 
     draw(ctx) {
         let size = model.gridSize;
-
-        ctx.save();
+        let img = assets.cache['dirt'];
 
         switch (this.type) {
             case GridItemType.SKY:
-                ctx.fillStyle = 'blue';
+                img = assets.cache['sky'];
                 break;
             case GridItemType.DIRT:
                 if (this.dug == true) {
                     switch (this.contents) {
                         case DirtContentType.DIAMOND:
-                            ctx.fillStyle = 'lightblue';
+                            img = assets.cache['diamond'];
                             break;
                         case DirtContentType.BONE:
-                            ctx.fillStyle = 'white';
+                            img = assets.cache[`bone3`];
                             break;
                         default:
-                            ctx.fillStyle = 'purple';
+                            img = assets.cache['tunnel'];
                         break;
                     }
                 } else {
-                    ctx.fillStyle = 'red';
+                    img = assets.cache['dirt'];
                 }
                 break;
             case GridItemType.ROCK:
-                ctx.fillStyle = 'grey';
+                img = assets.cache['rock'];
                 break;
         }
 
-        ctx.strokeStyle = 'green';
-        ctx.beginPath();
-        ctx.rect(this.x * size, this.y * size, size, size);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
+        ctx.save();
+        ctx.drawImage(img, this.x * size, this.y * size, size, size)
         ctx.restore();
     }
 
     canOccupy() {
+        if (!this.dug && this.type !== GridItemType.SKY) {
+            return false;
+        }
+        return true;
+    }
+
+    canDig() {
         if (this.type == GridItemType.ROCK) {
             return false;
         }

@@ -1,5 +1,5 @@
 import GridItem, { DirtContentType, GridItemType } from "./gridItem";
-import model from "./model";
+import model from "./models/model";
 import Player from "./player";
 
 export default class Game{
@@ -17,12 +17,12 @@ export default class Game{
         this.canvas = document.getElementById(id) as HTMLCanvasElement;
         this.ctx = this.canvas.getContext('2d');
 
-        this.initGame();
+        this.newGame();
 
         window.addEventListener('keydown', (e) => this.handle_KEYDOWN(e))
     }
 
-    initGame() {
+    newGame() {
         this.grid = [];
         this.foundBones = 0;
         this.createGrid();
@@ -83,29 +83,30 @@ export default class Game{
     handle_KEYDOWN(e) {
         switch (e.key) {
             case 'ArrowRight':
-                this.movePlayer(1, 0);
+                this.checkSquare(1, 0);
                 break;
             case 'ArrowLeft':
-                this.movePlayer(-1, 0);
+                this.checkSquare(-1, 0);
                 break;
             case 'ArrowDown':
-                this.movePlayer(0, 1);
+                this.checkSquare(0, 1);
                 break;
             case 'ArrowUp':
-                this.movePlayer(0, -1);
+                this.checkSquare(0, -1);
                 break;
         }
     }
 
-    movePlayer(x, y) {
+    checkSquare(x, y) {
 
         if (x !== 0) {
             let nextX = this.player.x + x;
             let nextY = this.player.y + y;
             let nextSquare = this.grid[nextX][nextY];
             if (nextSquare && nextSquare.canOccupy()) {
-                this.digSquare(nextSquare);
                 this.player.x += x;
+            } else if (nextSquare && nextSquare.canDig()) {
+                this.digSquare(nextSquare);
             }
         }
 
@@ -114,8 +115,9 @@ export default class Game{
             let nextY = this.player.y + y;
             let nextSquare = this.grid[nextX][nextY];
             if (nextSquare && nextSquare.canOccupy()) {
-                this.digSquare(nextSquare);
                 this.player.y += y;
+            } else if (nextSquare && nextSquare.canDig()) {
+                this.digSquare(nextSquare);
             }
         }
     }
@@ -124,7 +126,7 @@ export default class Game{
         square.dig();
         if (square.contents == DirtContentType.DIAMOND) {
             setTimeout(() => {
-                this.initGame();
+             //   this.newGame();
             }, 1000);
         }
         if (square.contents == DirtContentType.BONE) {
