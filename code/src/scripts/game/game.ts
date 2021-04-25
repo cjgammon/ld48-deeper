@@ -144,7 +144,9 @@ export default class Game{
     }
 
     handle_KEYDOWN(e) {
-        if (model.state !== GameState.PLAYING) {
+        if (model.state !== GameState.PLAYING && 
+            model.state !== GameState.WIN) 
+        {
             model.state = GameState.PLAYING;
         }
 
