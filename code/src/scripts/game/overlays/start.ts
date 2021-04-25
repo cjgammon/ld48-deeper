@@ -12,7 +12,7 @@ export default class StartView{
         ctx.textAlign = 'center';
         ctx.fillStyle = 'white';
         ctx.font = "50px Arial";
-        ctx.fillText(`Deeper & Deeper`, 0, 20);
+        ctx.fillText(`Paleontologist with mines.`, 0, 20);
         ctx.restore();
     }
 }
