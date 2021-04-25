@@ -9,8 +9,9 @@ export interface LevelStruct{
 export const Levels: LevelStruct[] = [
     {width: 10, height: 10, bones: 1, bombs: 1},
     {width: 10, height: 10, bones: 2, bombs: 1},
-    {width: 20, height: 10, bones: 2, bombs: 1},
-    {width: 20, height: 20, bones: 2, bombs: 1},
+    {width: 10, height: 10, bones: 3, bombs: 2},
+    {width: 20, height: 10, bones: 3, bombs: 2},
+    {width: 20, height: 20, bones: 3, bombs: 2},
     {width: 15, height: 30, bones: 3, bombs: 2},
     {width: 10, height: 60, bones: 3, bombs: 3},
     {width: 10, height: 100, bones: 2, bombs: 3},

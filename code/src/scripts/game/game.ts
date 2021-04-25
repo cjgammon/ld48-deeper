@@ -243,7 +243,7 @@ export default class Game{
         this.ctx.restore();
 
         this.ctx.save();
-        this.ctx.translate(x + (this.gridWidth * model.gridSize) + 10, 0);
+        this.ctx.translate(x + (this.gridWidth * model.gridSize) + 10, 10);
         this.ui.draw(this.ctx);
         this.ctx.restore();
 
