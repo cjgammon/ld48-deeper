@@ -37,7 +37,17 @@ export default class GridItem{
                 break;
             case GridItemType.DIRT:
                 if (this.dug == true) {
-                    ctx.fillStyle = 'purple';
+                    switch (this.contents) {
+                        case DirtContentType.DIAMOND:
+                            ctx.fillStyle = 'lightblue';
+                            break;
+                        case DirtContentType.BONE:
+                            ctx.fillStyle = 'white';
+                            break;
+                        default:
+                            ctx.fillStyle = 'purple';
+                        break;
+                    }
                 } else {
                     ctx.fillStyle = 'red';
                 }

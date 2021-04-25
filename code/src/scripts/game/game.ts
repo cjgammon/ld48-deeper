@@ -1,4 +1,4 @@
-import GridItem, { GridItemType } from "./gridItem";
+import GridItem, { DirtContentType, GridItemType } from "./gridItem";
 import model from "./model";
 import Player from "./player";
 
@@ -9,17 +9,25 @@ export default class Game{
 
     gridWidth = 10;
     gridHeight = 20;
-    grid = [];
+    grid;
     player: Player;
+    foundBones = 0;
 
     constructor(id) {
         this.canvas = document.getElementById(id) as HTMLCanvasElement;
         this.ctx = this.canvas.getContext('2d');
 
-        this.createGrid();
-        this.addPlayer();
+        this.initGame();
 
         window.addEventListener('keydown', (e) => this.handle_KEYDOWN(e))
+    }
+
+    initGame() {
+        this.grid = [];
+        this.foundBones = 0;
+        this.createGrid();
+        this.populateGrid();
+        this.addPlayer();
     }
 
     createGrid() {
@@ -33,6 +41,37 @@ export default class Game{
                 row.push(new GridItem(i, j, type));
             }
             this.grid.push(row);
+        }
+    }
+
+    populateGrid() {
+        let dirtSquares = [];
+
+        for (let i = 0; i < this.grid.length; i++) {
+            let row = this.grid[i];
+            for (let j = 0; j < row.length; j++) {
+                let item = row[j];
+                if (j > 0) {
+                    if (Math.random() > .9) {
+                        item.type = GridItemType.ROCK;
+                    } else {
+                        dirtSquares.push(item);
+                    }
+                }
+            }
+        }
+        
+        let bones = [0, 0, 0, 0];
+        let diamonds = [0];
+
+        for (let i = 0; i < bones.length; i++) {
+            let square = dirtSquares[Math.floor(Math.random() * dirtSquares.length)];
+            square.contents = DirtContentType.BONE;
+        }
+
+        for (let i = 0; i < diamonds.length; i++) {
+            let square = dirtSquares[Math.floor(Math.random() * dirtSquares.length)];
+            square.contents = DirtContentType.DIAMOND;
         }
     }
 
@@ -64,10 +103,9 @@ export default class Game{
             let nextX = this.player.x + x;
             let nextY = this.player.y + y;
             let nextSquare = this.grid[nextX][nextY];
-            console.log(nextSquare, nextX, nextY);
             if (nextSquare && nextSquare.canOccupy()) {
+                this.digSquare(nextSquare);
                 this.player.x += x;
-                nextSquare.dig();
             }
         }
 
@@ -76,9 +114,21 @@ export default class Game{
             let nextY = this.player.y + y;
             let nextSquare = this.grid[nextX][nextY];
             if (nextSquare && nextSquare.canOccupy()) {
+                this.digSquare(nextSquare);
                 this.player.y += y;
-                nextSquare.dig();
             }
+        }
+    }
+
+    digSquare(square: GridItem) {
+        square.dig();
+        if (square.contents == DirtContentType.DIAMOND) {
+            setTimeout(() => {
+                this.initGame();
+            }, 1000);
+        }
+        if (square.contents == DirtContentType.BONE) {
+            this.foundBones ++;
         }
     }
 
