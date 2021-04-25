@@ -9,7 +9,8 @@ export const AssetList = [
     'bone3',
     'bone4',
     'guy1',
-    'guy2'
+    'guy2',
+    'bomb'
 ]
 
 class AssetModel{

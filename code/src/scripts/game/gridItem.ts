@@ -5,6 +5,7 @@ export class DirtContentType{
     static EMPTY = 'empty';
     static DIAMOND = 'diamond';
     static BONE = 'bone';
+    static BOMB = 'bomb';
 }
 
 export class GridItemType{
@@ -43,6 +44,9 @@ export default class GridItem{
                             break;
                         case DirtContentType.BONE:
                             img = assets.cache[`bone3`];
+                            break;
+                        case DirtContentType.BOMB:
+                            img = assets.cache[`bomb`];
                             break;
                         default:
                             img = assets.cache['tunnel'];
